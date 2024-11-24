@@ -1,0 +1,274 @@
+basePath: /
+definitions:
+  entities.DeleteResponse:
+    properties:
+      status:
+        type: boolean
+    type: object
+  entities.InsertResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  entities.Song:
+    properties:
+      group:
+        type: string
+      id:
+        type: integer
+      link:
+        type: string
+      releaseDate:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+  entities.SongRequest:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+    type: object
+  entities.SongUpdate:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      releaseDate:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+  entities.TextResponse:
+    properties:
+      text:
+        type: string
+    type: object
+  errors.ErrorMessage:
+    properties:
+      error:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Server 4 Song
+  title: Song API
+paths:
+  /api/deletesong/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete song
+      operationId: delete song
+      parameters:
+      - description: songId
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.DeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+      summary: DeleteSong
+      tags:
+      - songs
+  /api/getsongs:
+    get:
+      consumes:
+      - application/json
+      description: get songs
+      operationId: get songs
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: groupName
+        in: query
+        name: groupName
+        type: string
+      - description: song
+        in: query
+        name: song
+        type: string
+      - description: releaseDate
+        in: query
+        name: releaseDate
+        type: string
+      - description: text
+        in: query
+        name: text
+        type: string
+      - description: link
+        in: query
+        name: link
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Song'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+      summary: GetSongs
+      tags:
+      - songs
+  /api/gettext/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get text song
+      operationId: get text song
+      parameters:
+      - description: songId
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: lineInVerse
+        in: query
+        name: lineInVerse
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.TextResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+      summary: GetTextSong
+      tags:
+      - songs
+  /api/insertsong:
+    post:
+      consumes:
+      - application/json
+      description: insert song
+      operationId: insert song
+      parameters:
+      - description: Song
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.SongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.InsertResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+      summary: InsertSong
+      tags:
+      - songs
+  /api/updatesong/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: update song
+      operationId: update song
+      parameters:
+      - description: songId
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Song
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/entities.SongUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.TextResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorMessage'
+      summary: UpdateSong
+      tags:
+      - songs
+swagger: "2.0"

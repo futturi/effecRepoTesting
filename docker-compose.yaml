@@ -1,0 +1,11 @@
+version: '3.5'
+services:
+  sql-server:
+    image: postgres
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: effective
