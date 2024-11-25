@@ -36,7 +36,7 @@ func NewSongService(store store.Songs, songApiUrl string, apiTimeout int) *SongS
 func (s *SongService) InsertSong(ctx context.Context, insertReq entities.SongRequest) (int, error) {
 	log := logger.LoggerFromContext(ctx)
 	log = log.With("song", insertReq.Song, "group", insertReq.Group)
-	requestUrl := fmt.Sprintf("%s/info?group=%s&song=%s", s.songApiUrl, insertReq.Group, insertReq.Song)
+	requestUrl := fmt.Sprintf("http://%s/info?group=%s&song=%s", s.songApiUrl, insertReq.Group, insertReq.Song)
 	request, err := http.NewRequest(http.MethodGet, requestUrl, nil)
 	if err != nil {
 		log.Errorw("error with creating request", zap.Error(err))
@@ -49,6 +49,7 @@ func (s *SongService) InsertSong(ctx context.Context, insertReq entities.SongReq
 		return 0, err
 	}
 
+	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
 		log.Errorw("error with sending request", zap.Error(err))
 		return 0, errors.ErrAnotherStatucCode
