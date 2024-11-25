@@ -4,6 +4,7 @@ import (
 	"context"
 	"effectiveMobile/internal/entities"
 	"effectiveMobile/internal/logger"
+	"fmt"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -33,33 +34,31 @@ func (r *StoreSongs) InsertSong(ctx context.Context, req entities.Song) (int, er
 func (r *StoreSongs) GetSongs(ctx context.Context, filters entities.Song, limit, offset int) ([]entities.Song, error) {
 	log := logger.LoggerFromContext(ctx)
 	log.Info("started getting songs")
+
 	var songs []entities.Song
 	query := r.db.Model(&entities.Song{})
-	if filters.GroupName != "" {
-		query = query.Where("group_name LIKE ?", "%"+filters.GroupName+"%")
+
+	filterMap := map[string]string{
+		"group_name":   filters.GroupName,
+		"song":         filters.Song,
+		"release_date": filters.ReleaseDate,
+		"text":         filters.Text,
+		"link":         filters.Link,
 	}
-	if filters.Song != "" {
-		query = query.Where("song LIKE ?", "%"+filters.Song+"%")
-	}
-	if filters.ReleaseDate != "" {
-		query = query.Where("release_date LIKE ?", "%"+filters.ReleaseDate+"%")
-	}
-	if filters.Text != "" {
-		query = query.Where("text LIKE ?", "%"+filters.Text+"%")
-	}
-	if filters.Link != "" {
-		query = query.Where("text LIKE ?", "%"+filters.Link+"%")
+
+	for field, value := range filterMap {
+		if value != "" {
+			query = query.Where(fmt.Sprintf("%s LIKE ?", field), "%"+value+"%")
+		}
 	}
 
 	query = query.Offset((offset - 1) * limit).Limit(limit)
-	tx := query.Find(&songs)
-
-	if tx.Error != nil {
-		log.Errorw("error with getting songs", zap.Error(tx.Error))
-		return nil, tx.Error
+	if err := query.Find(&songs).Error; err != nil {
+		log.Errorw("error with getting songs", zap.Error(err))
+		return nil, err
 	}
 
-	log.Infow("songs are got")
+	log.Infow("songs are got", "count", len(songs))
 	return songs, nil
 }
 

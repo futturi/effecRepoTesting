@@ -84,10 +84,12 @@ func (s *SongService) GetSongs(ctx context.Context, filters entities.Song, limit
 	if offset == "" {
 		offset = "1"
 	}
-	_, err := time.Parse("02.01.2006", filters.ReleaseDate)
-	if err != nil {
-		log.Errorw("error with parsing release date", zap.Error(err))
-		return nil, errors.ErrIncorrectRequest
+	if filters.ReleaseDate != "" {
+		_, err := time.Parse("02.01.2006", filters.ReleaseDate)
+		if err != nil {
+			log.Errorw("error with parsing release date", zap.Error(err))
+			return nil, errors.ErrIncorrectRequest
+		}
 	}
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
@@ -187,10 +189,12 @@ func (s *SongService) GetTextSong(ctx context.Context, lineInVerse, page, limit,
 func (s *SongService) UpdateSong(ctx context.Context, songId string, song entities.SongUpdate) error {
 	log := logger.LoggerFromContext(ctx)
 	log = log.With("songId", songId)
-	_, err := time.Parse("02.01.2006", *song.ReleaseDate)
-	if err != nil {
-		log.Errorw("error with parsing release date", zap.Error(err))
-		return errors.ErrIncorrectRequest
+	if song.ReleaseDate != nil {
+		_, err := time.Parse("02.01.2006", *song.ReleaseDate)
+		if err != nil {
+			log.Errorw("error with parsing release date", zap.Error(err))
+			return errors.ErrIncorrectRequest
+		}
 	}
 	songIdInt, err := strconv.Atoi(songId)
 	if err != nil {
